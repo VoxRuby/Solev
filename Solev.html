@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Leveling Bot</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .chat-box {
+            height: 400px;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .message {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            animation: fadeIn 0.3s;
+        }
+        
+        .user-message {
+            background: rgba(0, 100, 255, 0.3);
+            border-left: 4px solid #0066ff;
+        }
+        
+        .bot-message {
+            background: rgba(0, 255, 255, 0.2);
+            border-left: 4px solid #00ffff;
+        }
+        
+        .story-message {
+            background: rgba(148, 0, 211, 0.3);
+            border-left: 4px solid #9400d3;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        
+        .npc-message {
+            background: rgba(255, 165, 0, 0.3);
+            border-left: 4px solid #ffa500;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .system-message {
+            background: rgba(255, 215, 0, 0.3); 
+            border-left: 4px solid #ffd700;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: #00ffff;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #00cccc;
+            transform: scale(1.05);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .gate-success {
+            color: #00ff00;
+        }
+        
+        .gate-danger {
+            color: #ff4444;
+        }
+        
+        .level-up {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        
+        .shop-item {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid gold;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        
+        .critical-success {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        
+        .stat-comparison {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        
+        .stat-good {
+            color: #00ff00;
+        }
+        
+        .stat-bad {
+            color: #ff4444;
+        }
+        
+        .quest-item {
+            background: rgba(100, 200, 255, 0.2);
+            border: 1px solid #64c8ff;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .quest-completed {
+            background: rgba(100, 255, 100, 0.2);
+            border: 1px solid #64ff64;
+        }
+        
+        .quest-progress {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        
+        .daily-reward {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        
+        .story-choice {
+            background: rgba(148, 0, 211, 0.2);
+            border: 2px solid #9400d3;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .story-choice:hover {
+            background: rgba(148, 0, 211, 0.4);
+            transform: scale(1.02);
+        }
+        
+        .chapter-complete {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .battle-info {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .battle-actions {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 SOLO LEVELING BOT</h1>
+        
+        <div class="chat-box" id="chat-box">
+            <div class="message bot-message">
+                🎉 Selamat datang, Hunter! Ketik <strong>!start</strong> untuk memulai perjalananmu!
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Ketik command (!help untuk bantuan)...">
+            <button onclick="sendMessage()">Kirim</button>
+        </div>
+        
+        <div class="stats" id="stats">
+            <!-- Stats akan muncul setelah !start -->
+        </div>
+  </div>
+  <script>
+    // Data Player
+    let player = {
+        name: "Sung Jin-Woo",
+        level: 1,
+        exp: 0,
+        job: null,
+        hp: 100,
+        maxHp: 100,
+        mp: 50,
+        maxMp: 50,
+        strength: 10,
+        agility: 10,
+        intelligence: 10,
+        gold: 100,
+        inventory: [
+            { name: "Health Potion", type: "potion", effect: "heal", value: 30, quantity: 3 },
+            { name: "Mana Potion", type: "potion", effect: "mana", value: 20, quantity: 2 }
+        ],
+        equipment: {
+            weapon: null,
+            armor: null,
+            accessory: null
+        },
+        gatesCleared: 0,
+        canChooseJob: false,
+        hasVisitedShop: false,
+        // Daily Quest System
+        dailyQuests: [],
+        lastQuestRefresh: null,
+        dailyLogin: 0,
+        questsCompleted: 0,
+        // Story Progress
+        storyProgress: 0,
+        storyChoices: [],
+        currentChapter: 0,
+        chaptersCompleted: [],
+        // Battle System
+        inBattle: false,
+        currentMonster: null,
+        battleLog: []
+    };
+
+    // Story Chapters - DIPERBARUI DENGAN CHAPTER 3
+    const storyChapters = {
+        1: {
+            title: "Chapter 1: The Weakest Hunter",
+            scenes: [
+                {
+                    type: "story",
+                    content: "🏙️ <strong>SEOUL, KOREA SELATAN</strong><br>Kamu adalah Sung Jin-Woo, Hunter rank E yang terlemah di Korea. Setiap hari kamu berjuang untuk bertahan hidup di dungeon level rendah..."
+                },
+                {
+                    type: "npc",
+                    name: "⚡ Choi Jong-In (Hunter Rank S)",
+                    content: "Hei, E-rank! Kamu pikir kamu bisa menjadi Hunter sejati? Lebih baik cari pekerjaan biasa saja!"
+                },
+                {
+                    type: "story", 
+                    content: "🔮 <strong>HARI ITU BERUBAH SEGALANYA...</strong><br>Kamu dan party mu memasuki Double Dungeon yang misterius. Sesuatu yang aneh terjadi..."
+                },
+                {
+                    type: "system",
+                    content: "🎭 <strong>DOUBLE DUNGEON - TEMPAT UJIAN</strong><br>Sebuah suara misterius bergema di kepalamu..."
+                },
+                {
+                    type: "npc",
+                    name: "👁️ Suara Misterius",
+                    content: "『Peserta yang terpilih... Apakah kamu ingin hidup? Atau mati?』"
+                },
+                {
+                    type: "choice",
+                    question: "Apa yang akan kamu lakukan?",
+                    options: [
+                        { text: "❓ Bertanya 'Siapa kamu?'", next: "investigate" },
+                        { text: "⚔️ Bersiap untuk bertarung", next: "fight" },
+                        { text: "🏃 Berusaha kabur", next: "escape" }
+                    ]
+                },
+                {
+                    type: "story",
+                    content: "💀 <strong>TRAGEDI DOUBLE DUNGEON</strong><br>Apapun pilihanmu, takdir tidak bisa dielakkan... Semua member party mu tewas, hanya kamu yang bertahan!"
+                },
+                {
+                    type: "system",
+                    content: "🔔 <strong>THE SYSTEM TERBANGKAI!</strong><br>Sebuah window biru muncul di depan matamu..."
+                }
+            ]
+        },
+        2: {
+            title: "Chapter 2: Awakening of the Shadow Monarch",
+            scenes: [
+                {
+                    type: "story",
+                    content: "✨ <strong>KEKUATAN BARU MENGALIR</strong><br>Kamu merasakan energi gelap mengalir dalam tubuhmu. The System memberimu kemampuan yang tidak terbayangkan!"
+                },
+                {
+                    type: "npc",
+                    name: "👁️ The System",
+                    content: "『Selamat datang, Player. Aku adalah System yang akan membantumu menjadi yang terkuat.』"
+                },
+                {
+                    type: "system",
+                    content: "🎯 <strong>QUEST AWAL: PERTAHANKAN HIDUPMU</strong><br>Kamu harus bertahan dari serangan monster di dungeon ini!"
+                },
+                {
+                    type: "choice",
+                    question: "Bagaimana kamu menggunakan kekuatan barumu?",
+                    options: [
+                        { text: "🕵️ Gunakan stealth dan hindari pertarungan", next: "stealth" },
+                        { text: "💥 Gunakan kekuatan penuh untuk menghancurkan musuh", next: "aggressive" },
+                        { text: "🎯 Analisis musuh sebelum menyerang", next: "tactical" }
+                    ]
+                },
+                {
+                    type: "story",
+                    content: "⚡ <strong>PERTARUNGAN PERTAMA</strong><br>Dengan kekuatan System, kamu berhasil mengalahkan semua monster di dungeon!"
+                },
+                {
+                    type: "npc",
+                    name: "👁️ The System",
+                    content: "『Excellent. Kamu telah lulus ujian pertama. Sekarang, kembangkan kekuatanmu dan naikkan level!』"
+                },
+                {
+                    type: "system",
+                    content: "🏆 <strong>CHAPTER 2 COMPLETE!</strong><br>Perjalananmu sebagai Shadow Monarch telah dimulai!"
+                }
+            ]
+        },
+        3: {
+            title: "Chapter 3: The First Shadow Soldier",
+            scenes: [
+                {
+                    type: "story",
+                    content: "🌑 <strong>KEKUATAN BAYANGAN TERBANGKAI</strong><br>Setelah beberapa minggu berlatih dengan System, kamu mulai merasakan kekuatan Shadow Monarch yang sebenarnya..."
+                },
+                {
+                    type: "npc",
+                    name: "👁️ The System",
+                    content: "『Player, kamu telah mencapai Level 10. Sudah waktunya untuk mempelajari kemampuan sejati dari Shadow Monarch.』"
+                },
+                {
+                    type: "system",
+                    content: "🎯 <strong>NEW ABILITY UNLOCKED: SHADOW EXTRACTION</strong><br>Kamu sekarang bisa mengekstrak shadow dari monster yang dikalahkan!"
+                },
+                {
+                    type: "story",
+                    content: "⚔️ <strong>PERTEMPURAN BESAR</strong><br>Kamu bertemu dengan Igris, the Blood-Red Commander, knight rank tinggi yang menjaga dungeon level A..."
+                },
+                {
+                    type: "npc",
+                    name: "🛡️ Igris the Blood-Red",
+                    content: "Mortal! Berani sekali memasuki wilayahku! Aku akan menghancurkanmu!"
+                },
+                {
+                    type: "choice",
+                    question: "Bagaimana kamu menghadapi Igris?",
+                    options: [
+                        { text: "💀 Gunakan Shadow Extraction langsung", next: "extract" },
+                        { text: "⚔️ Bertarung dulu sampai dia lemah", next: "weaken" },
+                        { text: "🎯 Analisis kelemahannya terlebih dahulu", next: "analyze" }
+                    ]
+                },
+                {
+                    type: "story",
+                    content: "🌑 <strong>KELAHIRAN SHADOW SOLDIER PERTAMA</strong><br>Dengan kekuatan Shadow Extraction, kamu berhasil mengekstrak Igris dan menjadikannya shadow soldier pertamamu!"
+                },
+                {
+                    type: "npc",
+                    name: "🛡️ Igris (Shadow Soldier)",
+                    content: "『Aku mengakui kekuatanmu, Master. Perintahkanlah dan aku akan melaksanakan.』"
+                },
+                {
+                    type: "system",
+                    content: "🏆 <strong>CHAPTER 3 COMPLETE!</strong><br>Kamu sekarang memiliki shadow soldier pertamamu! Kekuatanmu sebagai Shadow Monarch semakin berkembang!"
+                }
+            ]
+        }
+    };
+    // Available Jobs
+const jobs = {
+    "fighter": { 
+        name: "⚔️ Fighter", 
+        str: 15, agi: 10, int: 5, 
+        hp: 50, mp: 20,
+        desc: "Physical damage tinggi, HP besar",
+        weaponType: "sword"
+    },
+    "mage": { 
+        name: "🔮 Mage", 
+        str: 5, agi: 8, int: 20, 
+        hp: 20, mp: 80,
+        desc: "Magic power besar, MP tinggi",
+        weaponType: "staff" 
+    },
+    "archer": { 
+        name: "🏹 Archer", 
+        str: 8, agi: 18, int: 8, 
+        hp: 30, mp: 40,
+        desc: "Ranged attack, agility tinggi",
+        weaponType: "bow"
+    },
+    "tank": { 
+        name: "🛡️ Tank", 
+        str: 12, agi: 5, int: 8, 
+        hp: 80, mp: 30,
+        desc: "Defense kuat, HP sangat besar",
+        weaponType: "shield"
+    },
+    "assassin": { 
+        name: "🗡️ Assassin", 
+        str: 10, agi: 20, int: 5, 
+        hp: 25, mp: 35,
+        desc: "Critical chance tinggi, agility expert",
+        weaponType: "dagger"
+    }
+};
+
+// Job Skills
+const jobSkills = {
+    "fighter": [
+        { name: "Power Strike", cost: 10, damage: 1.5, description: "Serangan kuat dengan bonus damage" },
+        { name: "Taunt", cost: 5, effect: "taunt", description: "Memancing musuh untuk menyerangmu" },
+        { name: "Berserker Rage", cost: 20, damage: 2.0, selfDamage: 0.1, description: "Serangan sangat kuat tapi mengurangi HP sendiri" }
+    ],
+    "mage": [
+        { name: "Fire Ball", cost: 15, damage: 1.8, description: "Bola api yang meledak" },
+        { name: "Ice Shield", cost: 10, effect: "shield", description: "Perisai es mengurangi damage" },
+        { name: "Lightning Bolt", cost: 25, damage: 2.2, description: "Serangan petir yang sangat kuat" }
+    ],
+    "archer": [
+        { name: "Rapid Shot", cost: 8, damage: 1.3, description: "Beberapa tembakan cepat" },
+        { name: "Precise Shot", cost: 12, damage: 1.7, description: "Tembakan akurat dengan critical chance" },
+        { name: "Poison Arrow", cost: 15, damage: 1.2, effect: "poison", description: "Anak panah beracun yang damage over time" }
+    ],
+    "tank": [
+        { name: "Shield Bash", cost: 8, damage: 1.2, description: "Serangan dengan perisai" },
+        { name: "Iron Skin", cost: 15, effect: "defense", description: "Meningkatkan defense sementara" },
+        { name: "Provoke", cost: 5, effect: "taunt", description: "Memaksa musuh menyerangmu" }
+    ],
+    "assassin": [
+        { name: "Backstab", cost: 12, damage: 2.0, description: "Serangan dari belakang dengan damage besar" },
+        { name: "Shadow Step", cost: 10, effect: "dodge", description: "Menghindar dan bersiap untuk serangan berikutnya" },
+        { name: "Deadly Poison", cost: 18, damage: 1.5, effect: "poison", description: "Racun mematikan yang damage over time" }
+    ]
+};
+
+// Monster Data - DITAMBAH IGRIST
+const monsters = {
+    "goblin": { 
+        name: "Goblin", level: 1, hp: 30, maxHp: 30, damage: 8, 
+        exp: 15, gold: 10, 
+        description: "Monster kecil yang agresif" 
+    },
+    "slime": { 
+        name: "Slime", level: 1, hp: 25, maxHp: 25, damage: 5, 
+        exp: 10, gold: 5, 
+        description: "Benda lengket yang lambat" 
+    },
+    "wolf": { 
+        name: "Wolf", level: 2, hp: 40, maxHp: 40, damage: 12, 
+        exp: 20, gold: 15, 
+        description: "Serigala yang cepat dan ganas" 
+    },
+    "skeleton": { 
+        name: "Skeleton", level: 3, hp: 50, maxHp: 50, damage: 15, 
+        exp: 25, gold: 20, 
+        description: "Tulang belulang yang hidup" 
+    },
+    "igris": {
+        name: "Igris the Blood-Red", level: 10, hp: 200, maxHp: 200, damage: 35,
+        exp: 300, gold: 500,
+        description: "Knight rank tinggi dengan armor merah darah"
+    }
+};
+    // Shop Items
+const shopItems = {
+    "beginner_sword": { 
+        name: "Beginner Sword", type: "sword", tier: 1, price: 200,
+        stats: { strength: 5, agility: 2 }, 
+        desc: "Pedang dasar untuk fighter",
+        job: "fighter"
+    },
+    "beginner_staff": { 
+        name: "Beginner Staff", type: "staff", tier: 1, price: 200,
+        stats: { intelligence: 8, mp: 10 }, 
+        desc: "Tongkat dasar untuk mage",
+        job: "mage"
+    },
+    "beginner_bow": { 
+        name: "Beginner Bow", type: "bow", tier: 1, price: 200,
+        stats: { agility: 8, strength: 2 }, 
+        desc: "Busur dasar untuk archer", 
+        job: "archer"
+    },
+    "beginner_shield": { 
+        name: "Beginner Shield", type: "shield", tier: 1, price: 200,
+        stats: { maxHp: 30, strength: 3 }, 
+        desc: "Perisai dasar untuk tank",
+        job: "tank"
+    },
+    "beginner_dagger": { 
+        name: "Beginner Dagger", type: "dagger", tier: 1, price: 200,
+        stats: { agility: 10, strength: 1 }, 
+        desc: "Belati dasar untuk assassin",
+        job: "assassin"
+    }
+};
+
+// Gate difficulties dengan stat requirements
+const gates = {
+    "E": { 
+        baseSuccessRate: 95, 
+        exp: 50, 
+        gold: 100, 
+        minLevel: 1,
+        minStats: { strength: 8, agility: 8, intelligence: 8 }
+    },
+    "D": { 
+        baseSuccessRate: 80, 
+        exp: 100, 
+        gold: 200, 
+        minLevel: 2,
+        minStats: { strength: 15, agility: 12, intelligence: 10 }
+    },
+    "C": { 
+        baseSuccessRate: 65, 
+        exp: 200, 
+        gold: 400, 
+        minLevel: 3,
+        minStats: { strength: 25, agility: 18, intelligence: 15 }
+    },
+    "B": { 
+        baseSuccessRate: 50, 
+        exp: 400, 
+        gold: 800, 
+        minLevel: 5,
+        minStats: { strength: 40, agility: 25, intelligence: 20 }
+    },
+    "A": { 
+        baseSuccessRate: 35, 
+        exp: 800, 
+        gold: 1600, 
+        minLevel: 8,
+        minStats: { strength: 60, agility: 35, intelligence: 30 }
+    }
+};
+
+// Daily Quest System
+const dailyQuestsPool = {
+    "hunt_monsters": {
+        name: "🦊 Berburu Monster",
+        description: "Kalahkan {target} monster",
+        type: "hunt",
+        target: 3,
+        reward: { exp: 100, gold: 150 },
+        progress: 0
+    },
+    "clear_gates": {
+        name: "🏰 Clear Gates",
+        description: "Selesaikan {target} gate level apapun",
+        type: "gate",
+        target: 2,
+        reward: { exp: 150, gold: 200 },
+        progress: 0
+    },
+    "daily_login": {
+        name: "📅 Login Harian",
+        description: "Login hari ini",
+        type: "login",
+        target: 1,
+        reward: { exp: 80, gold: 100 },
+        progress: 0
+    }
+};
+
+function sendMessage() {
+    const input = document.getElementById('user-input');
+    const message = input.value.trim();
+    
+    if (message) {
+        addMessage(message, 'user');
+        processCommand(message);
+        input.value = '';
+    }
+}
+
+function addMessage(text, sender, className = '') {
+    const chatBox = document.getElementById('chat-box');
+    const messageDiv = document.createElement('div');
+    
+    if (className) {
+        messageDiv.className = `message ${className}`;
+    } else {
+        messageDiv.className = `message ${sender}-message`;
+    }
+    
+    messageDiv.innerHTML = text;
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    function processCommand(command) {
+    const args = command.toLowerCase().split(' ');
+    const cmd = args[0];
+    
+    // Jika sedang dalam battle, handle battle commands
+    if (player.inBattle) {
+        handleBattleCommand(command);
+        return;
+    }
+    
+    // Jika sedang dalam story, handle story choices
+    if (command.startsWith('choice_')) {
+        handleStoryChoice(command);
+        return;
+    }
+    
+    switch(cmd) {
+        case '!start':
+            startGame();
+            break;
+        case '!help':
+            showHelp();
+            break;
+        case '!profile':
+            showProfile();
+            break;
+        case '!job':
+            if (args[1] === 'list') {
+                showJobs();
+            } else if (args[1] === 'select' && args[2]) {
+                selectJob(args[2]);
+            } else {
+                addMessage('Gunakan: !job list atau !job select [nama_job]', 'bot');
+            }
+            break;
+        case '!gate':
+            if (args[1]) {
+                enterGate(args[1].toUpperCase());
+            } else {
+                addMessage('Gunakan: !gate [level] (contoh: !gate E)', 'bot');
+            }
+            break;
+        case '!gateinfo':
+            if (args[1]) {
+                showGateInfo(args[1].toUpperCase());
+            } else {
+                addMessage('Gunakan: !gateinfo [level] (contoh: !gateinfo E)', 'bot');
+            }
+            break;
+        case '!hunt':
+            startBattle();
+            break;
+        case '!inventory':
+            showInventory();
+            break;
+        case '!shop':
+            showShop();
+            break;
+        case '!buy':
+            if (args[1]) {
+                buyItem(args[1]);
+            } else {
+                addMessage('Gunakan: !buy [nama_item] (lihat !shop untuk daftar item)', 'bot');
+            }
+            break;
+        case '!equip':
+            showEquipment();
+            break;
+        case '!quest':
+            showDailyQuests();
+            break;
+        case '!claim':
+            if (args[1]) {
+                claimQuest(args[1]);
+            } else {
+                addMessage('Gunakan: !claim [quest_id] (lihat !quest untuk daftar quest)', 'bot');
+            }
+            break;
+        case '!daily':
+            claimDailyLogin();
+            break;
+        case '!story':
+            continueStory();
+            break;
+        case '!skipstory':
+            skipStory();
+            break;
+        default:
+            addMessage('Command tidak dikenali. Ketik !help untuk bantuan.', 'bot');
+    }
+}
+
+// ========== BATTLE SYSTEM ==========
+
+function startBattle() {
+    if (player.inBattle) {
+        addMessage('Kamu sedang dalam pertarungan!', 'bot');
+        return;
+    }
+
+    // Pilih monster berdasarkan level player
+    const availableMonsters = Object.values(monsters).filter(m => m.level <= player.level);
+    const monsterData = availableMonsters[Math.floor(Math.random() * availableMonsters.length)];
+    
+    player.currentMonster = JSON.parse(JSON.stringify(monsterData));
+    player.inBattle = true;
+    player.battleLog = [];
+    
+    let battleInfo = `<div class="battle-info">`;
+    battleInfo += `🎯 <strong>PERTEMUAN MONSTER!</strong><br>`;
+    battleInfo += `🐺 Kamu menemukan <strong>${player.currentMonster.name}</strong>!<br>`;
+    battleInfo += `📝 ${player.currentMonster.description}<br><br>`;
+    battleInfo += `<strong>STATUS BATTLE:</strong><br>`;
+    battleInfo += `❤️ ${player.name}: ${player.hp}/${player.maxHp} HP | 🐺 ${player.currentMonster.name}: ${player.currentMonster.hp}/${player.currentMonster.maxHp} HP`;
+    battleInfo += `</div>`;
+    
+    let battleActions = `<div class="battle-actions">`;
+    battleActions += `<strong>BATTLE COMMANDS:</strong><br>`;
+    battleActions += `• <strong>!serang</strong> - Serangan dasar<br>`;
+    if (player.job) {
+        battleActions += `• <strong>!skill [nama]</strong> - Gunakan skill (contoh: !skill power strike)<br>`;
+    }
+    battleActions += `• <strong>!use [item]</strong> - Gunakan item (contoh: !use health potion)<br>`;
+    battleActions += `• <strong>!kabur</strong> - Coba kabur dari pertarungan`;
+    battleActions += `</div>`;
+    
+    addMessage(battleInfo, 'bot');
+    addMessage(battleActions, 'bot');
+}
+
+function handleBattleCommand(command) {
+    const args = command.toLowerCase().split(' ');
+    const cmd = args[0];
+    
+    switch(cmd) {
+        case '!serang':
+            playerAttack();
+            break;
+        case '!skill':
+            if (args[1]) {
+                useSkill(args.slice(1).join(' '));
+            } else {
+                addMessage('❌ Gunakan: !skill [nama_skill]', 'bot');
+            }
+            break;
+        case '!use':
+            if (args[1]) {
+                useItem(args.slice(1).join(' '));
+            } else {
+                addMessage('❌ Gunakan: !use [nama_item]', 'bot');
+            }
+            break;
+        case '!kabur':
+            attemptEscape();
+            break;
+        default:
+            addMessage('❌ Command battle tidak dikenali', 'bot');
+    }
+}
+
+function playerAttack() {
+    const monster = player.currentMonster;
+    const baseDamage = Math.floor(player.strength * 0.8 + player.agility * 0.2);
+    const damage = Math.max(1, baseDamage + Math.floor(Math.random() * 5));
+    
+    monster.hp -= damage;
+    addMessage(`⚔️ Kamu menyerang <strong>${monster.name}</strong> dan造成 <strong>${damage} damage</strong>!`, 'bot');
+    
+    checkBattleEnd();
+    
+    if (player.inBattle) {
+        setTimeout(monsterAttack, 1000);
+    }
+}
+
+function useSkill(skillName) {
+    if (!player.job) {
+        addMessage('❌ Kamu butuh job untuk menggunakan skill!', 'bot');
+        return;
+    }
+    
+    const skills = jobSkills[player.job];
+    const skill = skills.find(s => s.name.toLowerCase() === skillName.toLowerCase());
+    
+    if (!skill) {
+        addMessage(`❌ Skill "${skillName}" tidak ditemukan!`, 'bot');
+        showSkills();
+        return;
+    }
+    
+    if (player.mp < skill.cost) {
+        addMessage(`❌ MP tidak cukup! Butuh ${skill.cost} MP, kamu punya ${player.mp} MP`, 'bot');
+        return;
+    }
+    
+    // Gunakan skill
+    player.mp -= skill.cost;
+    const monster = player.currentMonster;
+    
+    if (skill.damage) {
+        const baseDamage = Math.floor(player.strength * 0.5 + player.intelligence * 0.5);
+        const damage = Math.max(1, Math.floor(baseDamage * skill.damage));
+        monster.hp -= damage;
+        
+        addMessage(`🔮 Kamu menggunakan <strong>${skill.name}</strong>!`, 'bot');
+        addMessage(`💥造成 <strong>${damage} damage</strong> ke ${monster.name}!`, 'bot');
+        
+        if (skill.selfDamage) {
+            const selfDamage = Math.floor(player.maxHp * skill.selfDamage);
+            player.hp -= selfDamage;
+            addMessage(`💔 Kamu menerima <strong>${selfDamage} damage</strong> dari efek skill!`, 'bot');
+        }
+    } else if (skill.effect) {
+        addMessage(`🔮 Kamu menggunakan <strong>${skill.name}</strong>!`, 'bot');
+        addMessage(`🎯 ${monster.name} menjadi fokus padamu!`, 'bot');
+    }
+    
+    checkBattleEnd();
+    
+    if (player.inBattle) {
+        setTimeout(monsterAttack, 1000);
+    }
+}
+
+function showSkills() {
+    if (!player.job) {
+        addMessage('❌ Kamu butuh job untuk menggunakan skill!', 'bot');
+        return;
+    }
+    
+    const skills = jobSkills[player.job];
+    let skillsHTML = `<strong>🔮 SKILLS AVAILABLE:</strong><br>`;
+    
+    skills.forEach(skill => {
+        const canUse = player.mp >= skill.cost;
+        skillsHTML += `• <strong>${skill.name}</strong> (${skill.cost} MP) - ${skill.description}<br>`;
+    });
+    
+    addMessage(skillsHTML, 'bot');
+}
+
+function useItem(itemName) {
+    const item = player.inventory.find(i => 
+        i.name.toLowerCase() === itemName.toLowerCase() && i.quantity > 0
+    );
+    
+    if (!item) {
+        addMessage(`❌ Item "${itemName}" tidak ditemukan atau habis!`, 'bot');
+        return;
+    }
+    
+    // Gunakan item
+    item.quantity--;
+    
+    switch(item.effect) {
+        case 'heal':
+            const healAmount = Math.min(item.value, player.maxHp - player.hp);
+            player.hp += healAmount;
+            addMessage(`❤️ Kamu menggunakan <strong>${item.name}</strong> dan memulihkan <strong>${healAmount} HP</strong>!`, 'bot');
+            break;
+        case 'mana':
+            const manaAmount = Math.min(item.value, player.maxMp - player.mp);
+            player.mp += manaAmount;
+            addMessage(`✨ Kamu menggunakan <strong>${item.name}</strong> dan memulihkan <strong>${manaAmount} MP</strong>!`, 'bot');
+            break;
+    }
+    
+    // Hapus item jika habis
+    if (item.quantity <= 0) {
+        player.inventory = player.inventory.filter(i => i.quantity > 0);
+    }
+    
+    updateStats();
+    
+    // Monster tetap menyerang setelah menggunakan item
+    setTimeout(monsterAttack, 1000);
+}
+
+function attemptEscape() {
+    const escapeChance = 0.6 + (player.agility * 0.01);
+    const success = Math.random() < escapeChance;
+    
+    if (success) {
+        addMessage(`🏃 Kamu berhasil kabur dari <strong>${player.currentMonster.name}</strong>!`, 'bot');
+        endBattle(false);
+    } else {
+        addMessage(`❌ Gagal kabur! <strong>${player.currentMonster.name}</strong> mengejarmu!`, 'bot');
+        setTimeout(monsterAttack, 1000);
+    }
+}
+
+function monsterAttack() {
+    const monster = player.currentMonster;
+    const damage = Math.max(1, monster.damage + Math.floor(Math.random() * 3));
+    
+    player.hp -= damage;
+    addMessage(`🐺 <strong>${monster.name}</strong> menyerangmu dan造成 <strong>${damage} damage</strong>!`, 'bot');
+    
+    checkBattleEnd();
+    
+    if (player.inBattle) {
+        updateStats();
+    }
+}
+
+function checkBattleEnd() {
+    const monster = player.currentMonster;
+    
+    if (monster.hp <= 0) {
+        // Player menang
+        addMessage(`🎉 <strong>VICTORY!</strong> Kamu mengalahkan ${monster.name}!`, 'bot');
+        addMessage(`💰 Mendapat: ${monster.exp} EXP + ${monster.gold} Gold`, 'bot');
+        
+        player.exp += monster.exp;
+        player.gold += monster.gold;
+        
+        // Special reward untuk Igris
+        if (monster.name === "Igris the Blood-Red") {
+            addMessage(`🌑 <strong>SPECIAL REWARD!</strong> Kamu mendapatkan Shadow Soldier: Igris!`, 'bot');
+            player.inventory.push({ name: "Igris Shadow Soldier", type: "shadow", description: "Shadow soldier rank tinggi" });
+        }
+        
+        // Update quest progress
+        updateQuestProgress("hunt", 1);
+        updateQuestProgress("gold", monster.gold);
+        
+        endBattle(true);
+    } else if (player.hp <= 0) {
+        // Player kalah
+        addMessage(`💀 <strong>DEFEAT!</strong> Kamu dikalahkan oleh ${monster.name}...`, 'bot');
+        player.hp = 1; // Jangan biarkan HP 0
+        endBattle(false);
+    } else {
+        // Battle masih berlanjut, tampilkan status
+        let battleStatus = `<div class="battle-info">`;
+        battleStatus += `<strong>STATUS BATTLE:</strong><br>`;
+        battleStatus += `❤️ ${player.name}: ${player.hp}/${player.maxHp} HP | 🐺 ${player.currentMonster.name}: ${player.currentMonster.hp}/${player.currentMonster.maxHp} HP`;
+        battleStatus += `</div>`;
+        addMessage(battleStatus, 'bot');
+    }
+}
+
+function endBattle(victory) {
+    player.inBattle = false;
+    player.currentMonster = null;
+    
+    if (victory) {
+        checkLevelUp();
+    }
+    
+    updateStats();
+  }
+    // ========== STORY SYSTEM ==========
+
+function startGame() {
+    player = {
+        name: "Sung Jin-Woo",
+        level: 1,
+        exp: 0,
+        job: null,
+        hp: 100,
+        maxHp: 100,
+        mp: 50,
+        maxMp: 50,
+        strength: 10,
+        agility: 10,
+        intelligence: 10,
+        gold: 100,
+        inventory: [
+            { name: "Health Potion", type: "potion", effect: "heal", value: 30, quantity: 3 },
+            { name: "Mana Potion", type: "potion", effect: "mana", value: 20, quantity: 2 }
+        ],
+        equipment: {
+            weapon: null,
+            armor: null,
+            accessory: null
+        },
+        gatesCleared: 0,
+        canChooseJob: false,
+        hasVisitedShop: false,
+        dailyQuests: [],
+        lastQuestRefresh: new Date().toDateString(),
+        dailyLogin: 0,
+        questsCompleted: 0,
+        storyProgress: 0,
+        storyChoices: [],
+        currentChapter: 1,
+        chaptersCompleted: [],
+        inBattle: false,
+        currentMonster: null,
+        battleLog: []
+    };
+    
+    generateDailyQuests();
+    
+    addMessage('🎮 <strong>PERMAINAN DIMULAI!</strong>', 'bot');
+    addMessage('✨ <strong>SOLO LEVELING RPG</strong> ✨', 'bot');
+    addMessage('Kamu adalah <strong>Sung Jin-Woo</strong>, Hunter rank E terlemah!', 'bot');
+    
+    // Mulai story
+    setTimeout(() => {
+        startStoryChapter(1);
+    }, 1000);
+}
+
+function startStoryChapter(chapterNumber) {
+    const chapter = storyChapters[chapterNumber];
+    if (!chapter) return;
+    
+    player.currentChapter = chapterNumber;
+    player.storyProgress = 0;
+    
+    addMessage(`<div class="system-message">📖 <strong>${chapter.title}</strong></div>`, 'bot');
+    
+    // Show first scene
+    showNextStoryScene();
+}
+
+function showNextStoryScene() {
+    const chapter = storyChapters[player.currentChapter];
+    if (!chapter || player.storyProgress >= chapter.scenes.length) {
+        // Chapter selesai
+        completeChapter(player.currentChapter);
+        return;
+    }
+    
+    const scene = chapter.scenes[player.storyProgress];
+    
+    switch(scene.type) {
+        case "story":
+            addMessage(`<div class="story-message">${scene.content}</div>`, 'bot');
+            break;
+        case "npc":
+            addMessage(`<div class="npc-message"><strong>${scene.name}</strong><br>${scene.content}</div>`, 'bot');
+            break;
+        case "system":
+            addMessage(`<div class="system-message">${scene.content}</div>`, 'bot');
+            break;
+        case "quest":
+            addMessage(`<div class="system-message">${scene.content}</div>`, 'bot');
+            break;
+        case "choice":
+            showStoryChoice(scene);
+            return; // Jangan increment progress sampai choice dipilih
+    }
+    
+    player.storyProgress++;
+    
+    // Auto continue ke scene berikutnya setelah delay
+    if (player.storyProgress < chapter.scenes.length) {
+        setTimeout(showNextStoryScene, 2000);
+    }
+}
+
+function completeChapter(chapterNumber) {
+    player.chaptersCompleted.push(chapterNumber);
+    
+    if (chapterNumber === 1) {
+        addMessage(`<div class="chapter-complete">
+            🎉 <strong>CHAPTER 1 COMPLETE!</strong><br>
+            Kamu telah selamat dari Double Dungeon!<br>
+            Kekuatan System mulai terbangun dalam dirimu!
+        </div>`, 'bot');
+        
+        // Berikan reward chapter 1
+        player.exp += 100;
+        player.gold += 200;
+        addMessage(`<div class="system-message">🎁 <strong>CHAPTER REWARD:</strong> 100 EXP + 200 Gold!</div>`, 'bot');
+        
+    } else if (chapterNumber === 2) {
+        addMessage(`<div class="chapter-complete">
+            🎊 <strong>CHAPTER 2 COMPLETE!</strong><br>
+            The System telah terbangun sepenuhnya!<br>
+            Perjalananmu sebagai Shadow Monarch dimulai!
+        </div>`, 'bot');
+        
+        // Berikan reward chapter 2
+        player.exp += 200;
+        player.gold += 500;
+        player.strength += 5;
+        player.agility += 5;
+        player.intelligence += 5;
+        
+        addMessage(`<div class="system-message">🎁 <strong>CHAPTER REWARD:</strong> 200 EXP + 500 Gold + 5 semua stats!</div>`, 'bot');
+        
+    } else if (chapterNumber === 3) {
+        addMessage(`<div class="chapter-complete">
+            🌑 <strong>CHAPTER 3 COMPLETE!</strong><br>
+            Kamu sekarang memiliki Shadow Soldier pertamamu!<br>
+            Kekuatan Shadow Monarch semakin berkembang!
+        </div>`, 'bot');
+        
+        // Berikan reward chapter 3
+        player.exp += 500;
+        player.gold += 1000;
+        player.strength += 10;
+        player.agility += 10;
+        player.intelligence += 10;
+        player.maxHp += 50;
+        player.hp = player.maxHp;
+        
+        addMessage(`<div class="system-message">🎁 <strong>CHAPTER REWARD:</strong> 500 EXP + 1000 Gold + 10 semua stats + 50 Max HP!</div>`, 'bot');
+        addMessage(`🌑 <strong>NEW ABILITY:</strong> Kamu sekarang bisa memanggil Igris dalam battle!`, 'bot');
+    }
+    
+    updateStats();
+    addMessage('Ketik <strong>!story</strong> untuk melanjutkan ke chapter berikutnya!', 'bot');
+}
+
+function showStoryChoice(scene) {
+    addMessage(`<div class="story-message"><strong>${scene.question}</strong></div>`, 'bot');
+    
+    scene.options.forEach((option, index) => {
+        const choiceDiv = document.createElement('div');
+        choiceDiv.className = 'story-choice';
+        choiceDiv.innerHTML = option.text;
+        choiceDiv.onclick = function() {
+            handleStoryChoice(`choice_${index}`);
+        };
+        document.getElementById('chat-box').appendChild(choiceDiv);
+    });
+}
+
+function handleStoryChoice(choice) {
+    const chapter = storyChapters[player.currentChapter];
+    const currentScene = chapter.scenes[player.storyProgress];
+    const choiceIndex = parseInt(choice.split('_')[1]);
+    const selectedOption = currentScene.options[choiceIndex];
+    
+    // Hapus pilihan dari layar
+    const choiceElements = document.querySelectorAll('.story-choice');
+    choiceElements.forEach(el => el.remove());
+    
+    // Tampilkan pilihan player
+    addMessage(`<div class="user-message">${selectedOption.text}</div>`, 'user');
+    
+    player.storyProgress++;
+    player.storyChoices.push(selectedOption.next);
+    
+    // Lanjutkan story
+    setTimeout(showNextStoryScene, 1500);
+}
+
+function continueStory() {
+    if (player.currentChapter === 0) {
+        startStoryChapter(1);
+    } else if (player.chaptersCompleted.includes(1) && !player.chaptersCompleted.includes(2)) {
+        startStoryChapter(2);
+    } else if (player.chaptersCompleted.includes(2) && !player.chaptersCompleted.includes(3)) {
+        startStoryChapter(3);
+    } else if (player.currentChapter > 0 && player.storyProgress < storyChapters[player.currentChapter].scenes.length) {
+        showNextStoryScene();
+    } else {
+        addMessage('Tidak ada chapter story yang tersedia saat ini.', 'bot');
+    }
+}
+
+function skipStory() {
+    if (player.currentChapter === 1 && !player.chaptersCompleted.includes(1)) {
+        completeChapter(1);
+    } else if (player.currentChapter === 2 && !player.chaptersCompleted.includes(2)) {
+        completeChapter(2);
+    } else if (player.currentChapter === 3 && !player.chaptersCompleted.includes(3)) {
+        completeChapter(3);
+    }
+    addMessage('<div class="system-message">⏩ <strong>Story telah dilewati!</strong> Kamu bisa mulai berpetualang sekarang.</div>', 'bot');
+    }
+
+    // ========== DAILY QUEST SYSTEM ==========
+
+function generateDailyQuests() {
+    player.dailyQuests = [];
+    const questKeys = Object.keys(dailyQuestsPool);
+    
+    // Pilih 3 quest random
+    for (let i = 0; i < 3; i++) {
+        const randomKey = questKeys[Math.floor(Math.random() * questKeys.length)];
+        const quest = JSON.parse(JSON.stringify(dailyQuestsPool[randomKey]));
+        quest.id = randomKey + "_" + Date.now();
+        player.dailyQuests.push(quest);
+    }
+    
+    // Auto set daily login progress
+    const loginQuest = player.dailyQuests.find(q => q.type === "login");
+    if (loginQuest) {
+        loginQuest.progress = 1;
+    }
+}
+
+function checkQuestRefresh() {
+    const today = new Date().toDateString();
+    if (player.lastQuestRefresh !== today) {
+        player.lastQuestRefresh = today;
+        generateDailyQuests();
+        addMessage('🔄 <strong>Daily Quest telah direfresh!</strong> Cek !quest untuk quest baru!', 'bot');
+    }
+}
+
+function updateQuestProgress(type, value = 1) {
+    checkQuestRefresh();
+    
+    player.dailyQuests.forEach(quest => {
+        if (quest.completed) return;
+        
+        switch(quest.type) {
+            case "hunt":
+                if (type === "hunt") {
+                    quest.progress += value;
+                }
+                break;
+            case "gate":
+                if (type === "gate") {
+                    quest.progress += value;
+                }
+                break;
+            case "gold":
+                if (type === "gold") {
+                    quest.progress += value;
+                }
+                break;
+        }
+        
+        // Check if quest completed
+        if (quest.progress >= quest.target) {
+            quest.progress = quest.target;
+            quest.completed = true;
+        }
+    });
+}
+
+function showDailyQuests() {
+    checkQuestRefresh();
+    
+    let questsText = '📋 <strong>DAILY QUESTS</strong><br>';
+    questsText += `📅 Terakhir refresh: ${player.lastQuestRefresh}<br><br>`;
+    
+    if (player.dailyQuests.length === 0) {
+        questsText += 'Tidak ada quest aktif. Quest akan direset setiap hari.';
+    } else {
+        player.dailyQuests.forEach((quest, index) => {
+            const isCompleted = quest.completed;
+            const questClass = isCompleted ? 'quest-item quest-completed' : 'quest-item';
+            
+            questsText += `<div class="${questClass}">`;
+            questsText += `<strong>${quest.name}</strong><br>`;
+            questsText += `📝 ${quest.description.replace('{target}', quest.target)}<br>`;
+            
+            // Progress bar
+            const progressPercent = (quest.progress / quest.target) * 100;
+            questsText += `<div class="quest-progress">`;
+            questsText += `Progress: ${quest.progress}/${quest.target} (${Math.min(progressPercent, 100).toFixed(1)}%)<br>`;
+            questsText += `</div>`;
+            
+            questsText += `🎁 Reward: ${quest.reward.exp} EXP + ${quest.reward.gold} Gold<br>`;
+            
+            if (isCompleted) {
+                questsText += `✅ <strong>COMPLETED!</strong> Gunakan: <strong>!claim ${quest.id}</strong>`;
+            } else {
+                questsText += `🔄 Progress berlanjut otomatis`;
+            }
+            
+            questsText += `</div>`;
+        });
+    }
+    
+    questsText += `<br>💡 <strong>Tips:</strong> Quest akan otomatis track progress saat kamu berburu, clear gate, atau dapat gold!`;
+    
+    addMessage(questsText, 'bot');
+}
+
+function claimQuest(questId) {
+    checkQuestRefresh();
+    
+    const quest = player.dailyQuests.find(q => q.id === questId);
+    
+    if (!quest) {
+        addMessage('❌ Quest tidak ditemukan!', 'bot');
+        return;
+    }
+    
+    if (!quest.completed) {
+        addMessage('❌ Quest belum selesai! Lanjutkan bermain untuk menyelesaikannya.', 'bot');
+        return;
+    }
+    
+    // Berikan reward
+    player.exp += quest.reward.exp;
+    player.gold += quest.reward.gold;
+    player.questsCompleted++;
+    
+    addMessage(`🎉 <strong>QUEST COMPLETED!</strong>`, 'bot');
+    addMessage(`✅ ${quest.name}`, 'bot');
+    addMessage(`🎁 Kamu mendapatkan: ${quest.reward.exp} EXP + ${quest.reward.gold} Gold`, 'bot');
+    
+    // Hapus quest yang sudah diclaim
+    player.dailyQuests = player.dailyQuests.filter(q => q.id !== questId);
+    
+    // Check level up
+    checkLevelUp();
+    updateStats();
+}
+
+function claimDailyLogin() {
+    checkQuestRefresh();
+    
+    const today = new Date().toDateString();
+    if (player.dailyLogin === today) {
+        addMessage('❌ Kamu sudah claim login harian hari ini!', 'bot');
+        return;
+    }
+    
+    player.dailyLogin = today;
+    const loginBonus = 50 + (player.level * 10);
+    
+    player.gold += loginBonus;
+    player.exp += 30;
+    
+    addMessage(`📅 <strong>DAILY LOGIN BONUS!</strong>`, 'bot');
+    addMessage(`🎁 Kamu mendapatkan: ${loginBonus} Gold + 30 EXP`, 'bot');
+    addMessage(`🔥 Streak: ${player.questsCompleted} quest completed total`, 'bot');
+    
+    // Update login quest progress
+    updateQuestProgress("login");
+    
+    checkLevelUp();
+    updateStats();
+    }
+            // ========== GAME SYSTEMS ==========
+
+        function showHelp() {
+            const helpText = `
+🎯 <strong>AVAILABLE COMMANDS:</strong><br>
+• <strong>!start</strong> - Mulai permainan baru<br>
+• <strong>!story</strong> - Lanjutkan story<br>
+• <strong>!skipstory</strong> - Lewati story<br>
+• <strong>!profile</strong> - Lihat statistikmu<br>
+• <strong>!job list</strong> - Lihat semua job (Level 3+)<br>
+• <strong>!job select [job]</strong> - Pilih job (Level 3+)<br>
+• <strong>!gate [level]</strong> - Masuk gate (E sampai A)<br>
+• <strong>!gateinfo [level]</strong> - Lihat info gate<br>
+• <strong>!hunt</strong> - Berburu monster (Battle System)<br>
+• <strong>!shop</strong> - Buka toko senjata<br>
+• <strong>!buy [item]</strong> - Beli item dari shop<br>
+• <strong>!equip</strong> - Lihat equipment yang dipakai<br>
+• <strong>!inventory</strong> - Lihat inventory<br>
+• <strong>!quest</strong> - Lihat daily quest<br>
+• <strong>!claim [id]</strong> - Claim reward quest<br>
+• <strong>!daily</strong> - Claim login harian<br>
+• <strong>!help</strong> - Tampilkan bantuan
+
+🎮 <strong>BATTLE COMMANDS (saat !hunt):</strong><br>
+• <strong>!serang</strong> - Serangan dasar<br>
+• <strong>!skill [nama]</strong> - Gunakan skill (butuh job)<br>
+• <strong>!use [item]</strong> - Gunakan item (potion)<br>
+• <strong>!kabur</strong> - Coba kabur dari pertarungan
+            `;
+            addMessage(helpText, 'bot');
+        }
+
+        function showJobs() {
+            if (player.level < 3) {
+                addMessage(`❌ Kamu belum bisa memilih job! Butuh <strong>Level 3</strong>. Sekarang Level ${player.level}`, 'bot');
+                return;
+            }
+
+            let jobsText = '⚔️ <strong>AVAILABLE JOBS:</strong><br>';
+            for (const job in jobs) {
+                const jobData = jobs[job];
+                jobsText += `• <strong>${jobData.name}</strong><br>`;
+                jobsText += `  ${jobData.desc}<br>`;
+                jobsText += `  STR:${jobData.str} AGI:${jobData.agi} INT:${jobData.int} HP:${jobData.hp} MP:${jobData.mp}<br><br>`;
+            }
+            jobsText += 'Gunakan <strong>!job select [nama_job]</strong> untuk memilih<br>';
+            jobsText += 'Contoh: <strong>!job select mage</strong>';
+            addMessage(jobsText, 'bot');
+        }
+
+        function selectJob(jobName) {
+            if (player.level < 3) {
+                addMessage(`❌ Kamu belum bisa memilih job! Butuh <strong>Level 3</strong>. Sekarang Level ${player.level}`, 'bot');
+                return;
+            }
+
+            if (jobs[jobName]) {
+                player.job = jobName;
+                const jobData = jobs[jobName];
+                
+                // Apply job bonuses
+                player.strength += jobData.str;
+                player.agility += jobData.agi;
+                player.intelligence += jobData.int;
+                player.maxHp += jobData.hp;
+                player.maxMp += jobData.mp;
+                player.hp = player.maxHp;
+                player.mp = player.maxMp;
+                
+                addMessage(`🎉 <strong>JOB SELECTED!</strong> Kamu sekarang adalah ${jobData.name}!`, 'bot');
+                addMessage(`✨ Stats meningkat! +${jobData.str} STR, +${jobData.agi} AGI, +${jobData.int} INT`, 'bot');
+                addMessage(`❤️ HP: ${player.maxHp}, ✨ MP: ${player.maxMp}`, 'bot');
+                addMessage(`<strong>Sekarang buka !shop untuk membeli senjata pertama!</strong>`, 'bot');
+                updateStats();
+            } else {
+                addMessage('❌ Job tidak ditemukan. Gunakan !job list untuk melihat job yang available.', 'bot');
+            }
+        }
+
+        function calculateSuccessRate(gateLevel) {
+            const gate = gates[gateLevel];
+            let totalRatio = 0;
+            let statCount = 0;
+            
+            for (const stat in gate.minStats) {
+                const playerStat = player[stat] || 0;
+                const requiredStat = gate.minStats[stat];
+                const ratio = Math.min(playerStat / requiredStat, 2.0);
+                totalRatio += ratio;
+                statCount++;
+            }
+            
+            const averageRatio = totalRatio / statCount;
+            let successRate = gate.baseSuccessRate * Math.min(averageRatio, 1.5);
+            
+            return Math.min(successRate, 95);
+        }
+
+        function showGateInfo(level) {
+            const gate = gates[level];
+            if (!gate) {
+                addMessage('❌ Level gate tidak valid. Gunakan E, D, C, B, A', 'bot');
+                return;
+            }
+
+            const successRate = calculateSuccessRate(level);
+            
+            let infoText = `🏰 <strong>GATE LEVEL ${level} INFO</strong><br>`;
+            infoText += `📊 Base Success Rate: ${gate.baseSuccessRate}%<br>`;
+            infoText += `🎲 Your Success Rate: <strong>${successRate.toFixed(1)}%</strong><br>`;
+            infoText += `⭐ Minimum Level: ${gate.minLevel}<br>`;
+            infoText += `💰 Rewards: ${gate.exp} EXP + ${gate.gold} Gold<br><br>`;
+            
+            infoText += `<strong>STAT REQUIREMENTS:</strong><br>`;
+            infoText += `<div class="stat-comparison">`;
+            for (const stat in gate.minStats) {
+                const playerStat = player[stat] || 0;
+                const requiredStat = gate.minStats[stat];
+                const met = playerStat >= requiredStat;
+                const statName = getStatName(stat);
+                infoText += `${statName}: ${playerStat}/${requiredStat} `;
+                infoText += met ? `<span class="stat-good">✅</span>` : `<span class="stat-bad">❌</span>`;
+                infoText += `<br>`;
+            }
+            infoText += `</div>`;
+            
+            if (successRate > 80) {
+                infoText += `<br>⚡ <strong>BONUS ACTIVE!</strong> Success rate tinggi = Extra rewards!`;
+            }
+            
+            addMessage(infoText, 'bot');
+        }
+
+        function enterGate(level) {
+            if (player.inBattle) {
+                addMessage('❌ Kamu sedang dalam pertarungan! Selesaikan battle terlebih dahulu.', 'bot');
+                return;
+            }
+
+            const gate = gates[level];
+            if (!gate) {
+                addMessage('❌ Level gate tidak valid. Gunakan E, D, C, B, A', 'bot');
+                return;
+            }
+
+            if (player.level < gate.minLevel) {
+                addMessage(`❌ Level terlalu rendah! Butuh Level ${gate.minLevel} untuk Gate ${level}. Kamu Level ${player.level}`, 'bot');
+                return;
+            }
+
+            const successRate = calculateSuccessRate(level);
+            
+            addMessage(`🏰 Memasuki <strong>Gate Level ${level}</strong>...`, 'bot');
+            addMessage(`🎲 Success Rate: <strong>${successRate.toFixed(1)}%</strong>`, 'bot');
+            
+            setTimeout(() => {
+                const success = Math.random() * 100 < successRate;
+                
+                if (success) {
+                    let expBonus = 1.0;
+                    let goldBonus = 1.0;
+                    
+                    if (successRate > 80) {
+                        expBonus = 1.2;
+                        goldBonus = 1.15;
+                    }
+                    
+                    const finalExp = Math.floor(gate.exp * expBonus);
+                    const finalGold = Math.floor(gate.gold * goldBonus);
+                    
+                    player.exp += finalExp;
+                    player.gold += finalGold;
+                    player.gatesCleared++;
+                    
+                    // Update quest progress
+                    updateQuestProgress("gate", 1);
+                    updateQuestProgress("gold", finalGold);
+                    
+                    addMessage(`✅ <strong class="gate-success">GATE CLEARED!</strong>`, 'bot');
+                    addMessage(`💰 Reward: ${finalExp} EXP + ${finalGold} Gold`, 'bot');
+                    
+                    checkLevelUp();
+                } else {
+                    addMessage(`❌ <strong class="gate-danger">GATE FAILED!</strong> Kamu gagal menyelesaikan gate.`, 'bot');
+                    addMessage('💀 Kamu kehilangan 15% HP maksimal', 'bot');
+                    const hpLoss = Math.floor(player.maxHp * 0.15);
+                    player.hp = Math.max(1, player.hp - hpLoss);
+                }
+                
+                updateStats();
+            }, 2000);
+        }
+
+        function showShop() {
+            if (!player.job) {
+                addMessage('❌ Kamu harus memilih job terlebih dahulu dengan !job select', 'bot');
+                return;
+            }
+
+            const playerJob = player.job;
+            
+            let shopText = `🏪 <strong>SHOP - Senjata untuk ${jobs[playerJob].name}</strong><br>`;
+            shopText += `💰 Gold kamu: <strong>${player.gold}</strong><br><br>`;
+            
+            let hasItems = false;
+            
+            for (const itemKey in shopItems) {
+                const item = shopItems[itemKey];
+                
+                if (item.job === playerJob) {
+                    hasItems = true;
+                    shopText += `<div class="shop-item">`;
+                    shopText += `<strong>${item.name}</strong> (Tier ${item.tier})<br>`;
+                    shopText += `💰 Price: ${item.price} Gold<br>`;
+                    shopText += `📊 Stats: `;
+                    
+                    const statStrings = [];
+                    for (const stat in item.stats) {
+                        const value = item.stats[stat];
+                        const statName = getStatName(stat);
+                        statStrings.push(`${statName}: ${value > 0 ? '+' : ''}${value}`);
+                    }
+                    shopText += statStrings.join(', ') + `<br>`;
+                    shopText += `📝 ${item.desc}<br>`;
+                    shopText += `🛒 Gunakan: <strong>!buy ${itemKey}</strong>`;
+                    shopText += `</div><br>`;
+                }
+            }
+            
+            if (!hasItems) {
+                shopText += `🎯 Tidak ada senjata yang tersedia untuk job mu.`;
+            } else {
+                shopText += `<br>Gunakan <strong>!buy [nama_item]</strong> untuk membeli.`;
+            }
+            
+            addMessage(shopText, 'bot');
+            player.hasVisitedShop = true;
+        }
+
+        function buyItem(itemKey) {
+            if (!player.job) {
+                addMessage('❌ Kamu harus memilih job terlebih dahulu dengan !job select', 'bot');
+                return;
+            }
+
+            const item = shopItems[itemKey];
+            
+            if (!item) {
+                addMessage('❌ Item tidak ditemukan. Gunakan !shop untuk melihat daftar item.', 'bot');
+                return;
+            }
+
+            if (item.job !== player.job) {
+                addMessage(`❌ Item ini tidak cocok untuk job mu (${jobs[player.job].name})`, 'bot');
+                return;
+            }
+
+            if (player.gold < item.price) {
+                addMessage(`❌ Gold tidak cukup! Butuh ${item.price} Gold, kamu punya ${player.gold} Gold`, 'bot');
+                return;
+            }
+
+            player.gold -= item.price;
+            
+            if (player.equipment.weapon) {
+                const oldWeapon = player.equipment.weapon;
+                for (const stat in oldWeapon.stats) {
+                    if (stat === 'maxHp') {
+                        player.maxHp -= oldWeapon.stats[stat];
+                        player.hp = Math.min(player.hp, player.maxHp);
+                    } else if (stat === 'mp') {
+                        player.maxMp -= oldWeapon.stats[stat];
+                        player.mp = Math.min(player.mp, player.maxMp);
+                    } else {
+                        player[stat] -= oldWeapon.stats[stat];
+                    }
+                }
+                addMessage(`🔁 Melepas: ${oldWeapon.name}`, 'bot');
+            }
+
+            player.equipment.weapon = {
+                name: item.name,
+                type: item.type,
+                tier: item.tier,
+                stats: item.stats
+            };
+
+            for (const stat in item.stats) {
+                if (stat === 'maxHp') {
+                    player.maxHp += item.stats[stat];
+                    player.hp += item.stats[stat];
+                } else if (stat === 'mp') {
+                    player.maxMp += item.stats[stat];
+                    player.mp += item.stats[stat];
+                } else {
+                    player[stat] += item.stats[stat];
+                }
+            }
+
+            addMessage(`✅ Berhasil membeli <strong>${item.name}</strong>!`, 'bot');
+            addMessage(`💰 Gold berkurang: ${item.price} | Sisa: ${player.gold} Gold`, 'bot');
+            addMessage(`✨ Stats meningkat!`, 'bot');
+            
+            updateStats();
+        }
+
+        function getStatName(stat) {
+            const statNames = {
+                'strength': 'STR',
+                'agility': 'AGI', 
+                'intelligence': 'INT',
+                'maxHp': 'HP',
+                'mp': 'MP'
+            };
+            return statNames[stat] || stat;
+        }
+
+        function showEquipment() {
+            let equipText = '🎒 <strong>EQUIPMENT:</strong><br>';
+            
+            if (player.equipment.weapon) {
+                const weapon = player.equipment.weapon;
+                equipText += `⚔️ Weapon: <strong>${weapon.name}</strong> (Tier ${weapon.tier})<br>`;
+            } else {
+                equipText += `⚔️ Weapon: <em>Tidak ada</em><br>`;
+            }
+            
+            if (player.equipment.armor) {
+                equipText += `🛡️ Armor: ${player.equipment.armor.name}<br>`;
+            } else {
+                equipText += `🛡️ Armor: <em>Tidak ada</em><br>`;
+            }
+            
+            if (player.equipment.accessory) {
+                equipText += `💍 Accessory: ${player.equipment.accessory.name}<br>`;
+            } else {
+                equipText += `💍 Accessory: <em>Tidak ada</em><br>`;
+            }
+            
+            addMessage(equipText, 'bot');
+        }
+
+        function checkLevelUp() {
+            const expNeeded = player.level * 100;
+            if (player.exp >= expNeeded) {
+                const oldLevel = player.level;
+                player.level++;
+                player.exp = 0;
+                
+                player.maxHp += 15;
+                player.maxMp += 10;
+                player.strength += 2;
+                player.agility += 2;
+                player.intelligence += 2;
+                
+                player.hp = player.maxHp;
+                player.mp = player.maxMp;
+                
+                // Update quest progress untuk level up
+                updateQuestProgress("level", player.level - oldLevel);
+                
+                addMessage(`<span class="level-up">🎊 LEVEL UP! Sekarang Level ${player.level}!</span>`, 'bot');
+                addMessage(`✨ Stats meningkat: +15 HP, +10 MP, +2 semua atribut!`, 'bot');
+                
+                if (player.level >= 3 && !player.job && !player.canChooseJob) {
+                    player.canChooseJob = true;
+                    addMessage(`🎉 <strong>Sekarang kamu bisa memilih job! Gunakan !job list</strong>`, 'bot');
+                }
+                
+                updateStats();
+            }
+        }
+
+        function showProfile() {
+            const jobInfo = player.job ? 
+                `${jobs[player.job].name} (${player.job})` : 
+                'Belum dipilih' + (player.level < 3 ? ` - Butuh Level 3` : ' - Gunakan !job list');
+
+            const weaponInfo = player.equipment.weapon ? 
+                `${player.equipment.weapon.name} (Tier ${player.equipment.weapon.tier})` : 'Tidak ada';
+
+            const profile = `
+👤 <strong>PROFILE HUNTER</strong><br>
+🏷️ Name: ${player.name}<br>
+⭐ Level: ${player.level}<br>
+📊 EXP: ${player.exp}/${player.level * 100}<br>
+⚔️ Job: ${jobInfo}<br>
+⚔️ Weapon: ${weaponInfo}<br>
+❤️ HP: ${player.hp}/${player.maxHp}<br>
+✨ MP: ${player.mp}/${player.maxMp}<br>
+💪 STR: ${player.strength} | 🏃 AGI: ${player.agility} | 🧠 INT: ${player.intelligence}<br>
+🏰 Gates Cleared: ${player.gatesCleared}<br>
+📋 Quests Completed: ${player.questsCompleted}<br>
+📖 Chapters Completed: ${player.chaptersCompleted.length}/3<br>
+💰 Gold: ${player.gold}
+            `;
+            addMessage(profile, 'bot');
+        }
+
+        function showInventory() {
+            if (player.inventory.length === 0) {
+                addMessage('🎒 Inventory kosong.', 'bot');
+                return;
+            }
+
+            let invText = '🎒 <strong>INVENTORY:</strong><br>';
+            player.inventory.forEach(item => {
+                invText += `• <strong>${item.name}</strong> (${item.quantity}x)`;
+                if (item.type === 'potion') {
+                    if (item.effect === 'heal') {
+                        invText += ` - Heal ${item.value} HP`;
+                    } else if (item.effect === 'mana') {
+                        invText += ` - Restore ${item.value} MP`;
+                    }
+                } else if (item.type === 'shadow') {
+                    invText += ` - Shadow Soldier`;
+                }
+                invText += `<br>`;
+            });
+            addMessage(invText, 'bot');
+        }
+
+        function updateStats() {
+            const statsDiv = document.getElementById('stats');
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div>⭐ Level</div>
+                    <div><strong>${player.level}</strong></div>
+                </div>
+                <div class="stat-card">
+                    <div>📊 EXP</div>
+                    <div><strong>${player.exp}/${player.level * 100}</strong></div>
+                </div>
+                <div class="stat-card">
+                    <div>⚔️ Job</div>
+                    <div><strong>${player.job ? player.job.toUpperCase() : '-'}</strong></div>
+                </div>
+                <div class="stat-card">
+                    <div>❤️ HP</div>
+                    <div><strong>${player.hp}/${player.maxHp}</strong></div>
+                </div>
+                <div class="stat-card">
+                    <div>✨ MP</div>
+                    <div><strong>${player.mp}/${player.maxMp}</strong></div>
+                </div>
+                <div class="stat-card">
+                    <div>💰 Gold</div>
+                    <div><strong>${player.gold}</strong></div>
+                </div>
+            `;
+        }
+
+        // Enter key untuk mengirim pesan
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        document.getElementById('user-input').focus();
+    </script>
+</body>
+</html>
